@@ -1,0 +1,17 @@
+
+
+client_secrets.json
+*.csv
+*.json
+*.tif
+*.joblib
+
+swaths/*
+npy
+google-cloud-sdk
+higher_res
+GEE_Sentinel2_Monthly
+
+.DS_Store
+data/.DS_Store
+__pycache__
