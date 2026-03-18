@@ -2,15 +2,20 @@
 
 ## Overview
 
-Detects plastic pollution at **10m resolution** using Google AlphaEarth
-satellite embeddings (64-dimensional) as features for a Random Forest
-classifier trained on globally-sourced labeled sites.
+For Val: 
+
+```bash
+python pipeline/download_swaths.py
+# downloads the patches, 
+# I'm not sure I can add you to the same google earth project
+```
+
 
 ```
-step1_gpgp_sampling.py      ← verify embeddings work on known GPGP plastic
-step2_build_dataset.py      ← build labeled dataset (beach + river + ocean)
-step3_train_classifier.py   ← train RF, validate, save to GEE Asset
-step4_apply_jamaica.py      ← apply to Kingston area, export results
+step1_gpgp_sampling.py      # verify embeddings work on known GPGP plastic
+step2_build_dataset.py      # build labeled dataset (beach + river + ocean)
+step3_train_classifier.py   # train RF, validate, save to GEE Asset
+step4_apply_jamaica.py      # apply to Kingston area, export results
 ```
 
 

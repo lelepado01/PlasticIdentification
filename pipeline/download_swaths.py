@@ -1,20 +1,3 @@
-"""
-download_swaths.py
-
-Downloads 10km x 10km S2 RGB swaths (1000x1000 px at 10m) as PNGs
-covering the Great Pacific Garbage Patch accumulation zone.
-
-Grid coverage:
-  130W - 160W  x  27N - 43N
-  ~48,000 cells at 10km spacing — downloads in parallel batches.
-
-Each PNG gets a .json sidecar with geographic bounds for the labeling tool.
-
-Output: swaths/gpgp_<col>_<row>.png + .json
-
-Resume-safe: already-downloaded swaths are skipped automatically.
-"""
-
 import ee
 import requests
 import json
@@ -28,7 +11,7 @@ import io
 ee.Authenticate()
 ee.Initialize(project='plastic-483715')
 
-OUT_DIR  = Path('swaths2')
+OUT_DIR  = Path('swaths')
 OUT_DIR.mkdir(exist_ok=True)
 
 YEAR      = '2022'
@@ -93,22 +76,14 @@ def fetch_swath(ci, ri, lon, lat, name):
     lon_min, lon_max = min(lons_c), max(lons_c)
     lat_min, lat_max = min(lats_c), max(lats_c)
 
-    # GPGP is open ocean — cloud cover is often low but scenes are sparse.
-    # We use a wide multi-year composite so every tile has data.
     candidate = None
-    for date_start, date_end, cloud_pct in [
-        (f'{YEAR}-01-01', f'{YEAR}-12-31', 5),
-        ('2020-01-01',    '2023-12-31',    5),
-        ('2018-01-01',    '2024-12-31',    5),
-    ]:
-        col = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-                 .filterBounds(geom)
-                 .filterDate(date_start, date_end)
-                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloud_pct))
-                 .select(['B4', 'B3', 'B2']))
-        if col.size().getInfo() > 0:
-            candidate = col
-            break
+    col = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+                .filterBounds(geom)
+                .filterDate(f'{YEAR}-01-01', f'{YEAR}-12-31')
+                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
+                .select(['B4', 'B3', 'B2']))
+    if col.size().getInfo() > 0:
+        candidate = col
 
     if candidate is None:
         return 'no_data', name
@@ -209,5 +184,4 @@ Done in {elapsed_min:.1f} min
   Errors     : {counts['http_error']:>6}
 
 Total PNGs in {OUT_DIR}/: {len(list(OUT_DIR.glob('*.png')))}
-Run label_patches.py to start labeling.
 """)
