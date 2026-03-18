@@ -1,4 +1,4 @@
-# Plastic Detection Pipeline — AlphaEarth Embeddings + Random Forest
+# Plastic Detection Pipeline — AlphaEarth Embeddings 
 
 ## Overview
 
